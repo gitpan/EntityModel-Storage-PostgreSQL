@@ -1,0 +1,11 @@
+Changes
+LICENSE
+MANIFEST
+META.yml
+Makefile.PL
+README
+dist.ini
+lib/EntityModel/Storage/PostgreSQL.pm
+t/00-pod.t
+t/00-use.t
+t/storage-postgresql.t
