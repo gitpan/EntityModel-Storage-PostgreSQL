@@ -1,3 +1,6 @@
+0.002     2011-02-06 00:35:03 Europe/London
+	Provide the ->store method so that updates work correctly, and extend tests slightly.
+
 0.001     2011-02-01 05:44:14 Europe/London
 	Preliminary release to CPAN.
 

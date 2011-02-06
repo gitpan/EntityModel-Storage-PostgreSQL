@@ -7,7 +7,7 @@ use EntityModel::Class {
 	primary_cache	=> { type => 'array' },
 };
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 =head1 NAME
 
@@ -367,7 +367,7 @@ sub create_table_query {
 	my @bind;
 	# Put together the constituent fields
 	my $content = join(', ', map {
-		$self->quoted_field_name($_) . ' ' . $_->type
+		$self->quoted_field_name($_) . ' ' . $_->type . ($tbl->primary eq $_->name ? ' primary key' : '')
 	} $tbl->field->list);
 
 	# TODO Any extras such as index or constraints
@@ -572,6 +572,8 @@ sub schema_exists {
 
 Creates a new instance for the given entity.
 
+TODO implement ->store
+
 =cut
 
 sub create {
@@ -588,6 +590,20 @@ sub create {
 	return $rslt;
 }
 
+sub store {
+	my $self = shift;
+	my %args = @_;
+	logError("Creating entity [%s] with [%s]", $args{entity}, $args{data});
+	my $q = EntityModel::Query->new(
+		db		=> $self->db,
+		'update'	=> $self->quoted_table_name($args{entity}),
+		fields		=> $args{data},
+		where		=> [ $args{entity}->primary => $args{id} ]
+	);
+	my $rslt = $q->results;
+	return $rslt;
+}
+
 sub read {
 	my $self = shift;
 	my %args = @_;
@@ -596,6 +612,7 @@ sub read {
 		db		=> $self->db,
 		'select'	=> [ map { $self->quoted_field_name($_) } $args{entity}->field->list ],
 		'from'		=> $self->quoted_table_name($args{entity}),
+		where		=> [ $args{entity}->primary => $args{id} ],
 		limit		=> 1
 	);
 	my ($rslt) = $q->results;

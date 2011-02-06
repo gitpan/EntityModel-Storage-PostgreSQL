@@ -1,7 +1,7 @@
 
 
 This archive contains the distribution EntityModel-Storage-PostgreSQL,
-version 0.001:
+version 0.002:
 
   backend storage interface for L<EntityModel>
 
