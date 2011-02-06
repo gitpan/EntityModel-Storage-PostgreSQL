@@ -20,9 +20,9 @@ my %WriteMakefileArgs = (
   'LICENSE' => 'perl',
   'NAME' => 'EntityModel::Storage::PostgreSQL',
   'PREREQ_PM' => {
-    'EntityModel' => '0.002'
+    'EntityModel' => '0.004'
   },
-  'VERSION' => '0.002',
+  'VERSION' => '0.003',
   'test' => {
     'TESTS' => 't/*.t'
   }

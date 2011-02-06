@@ -1,3 +1,6 @@
+0.003     2011-02-06 07:11:37 Europe/London
+	Fix (+ test) returned ID.
+
 0.002     2011-02-06 00:35:03 Europe/London
 	Provide the ->store method so that updates work correctly, and extend tests slightly.
 

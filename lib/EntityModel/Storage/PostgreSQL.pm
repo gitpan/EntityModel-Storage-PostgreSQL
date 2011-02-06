@@ -7,7 +7,7 @@ use EntityModel::Class {
 	primary_cache	=> { type => 'array' },
 };
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 =head1 NAME
 
@@ -51,6 +51,8 @@ sub setup {
 		port		=> delete $args{port},
 		dbname		=> delete $args{dbname}
 	)) unless $self->db;
+
+# Without a database, we can't do much, bail out here
 	die "no db" unless $self->db;
 	return $self;
 }
@@ -410,6 +412,8 @@ sub create_table {
 
 =head2 add_field_to_table
 
+Add the requested field to the given table, and clear related caches.
+
 =cut
 
 sub add_field_to_table {
@@ -430,6 +434,8 @@ sub add_field_to_table {
 }
 
 =head2 remove_table
+
+Remove a table entirely.
 
 =cut
 
@@ -470,40 +476,6 @@ sub read_tables {
 		push @table_list, { name => $name } if lc($type) eq 'table';
 	}
 	return @table_list;	
-}
-
-=head2 row_count
-
-=cut
-
-sub row_count {
-	my $self = shift;
-	my $tbl = shift;
-
-	my $sql = $self->sql_for('Table/RowCount', { schema => { name => $self->schema }, table => $tbl });
-	my $sth = $self->dbh->prepare($sql);
-	$sth->execute;
-
-	my @table_list;
-	if(my $row = $sth->fetchrow_arrayref) {
-		return $row->[0];
-	}
-	return undef;
-}
-
-=head2 find
-
-=cut
-
-sub find {
-	my $self = shift;
-	my $tbl = shift;
-	my $spec = shift;
-	if(ref $spec eq 'HASH') {
-		my $sql = $self->sql_for('Table/Find', { schema => { name => $self->schema }, table => $tbl, spec => $spec });
-		my $sth = $self->dbh->prepare($sql);
-		$sth->execute;
-	}
 }
 
 =head2 post_commit
@@ -568,11 +540,34 @@ sub schema_exists {
 	return scalar @$rslt;
 }
 
+=head2 row_count
+
+Reports how many rows are in the given table.
+
+=cut
+
+sub row_count {
+	my $self = shift;
+	my $tbl = shift;
+	die 'not yet implemented';
+}
+
+=head2 find
+
+Find entries.
+
+=cut
+
+sub find {
+	my $self = shift;
+	my $tbl = shift;
+	my $spec = shift;
+	die 'not yet implemented';
+}
+
 =head2 create
 
 Creates a new instance for the given entity.
-
-TODO implement ->store
 
 =cut
 
@@ -586,9 +581,15 @@ sub create {
 		values		=> $args{data},
 		returning	=> [ $args{entity}->primary ]
 	);
-	my $rslt = $q->results;
-	return $rslt;
+	my ($rslt) = $q->results;
+	return $rslt->{$args{entity}->primary};
 }
+
+=head2 store
+
+Update the database with current in-memory values for the given entity instance.
+
+=cut
 
 sub store {
 	my $self = shift;
@@ -603,6 +604,12 @@ sub store {
 	my $rslt = $q->results;
 	return $rslt;
 }
+
+=head2 read
+
+Read information for the requested entity instance.
+
+=cut
 
 sub read {
 	my $self = shift;
